@@ -115,8 +115,8 @@ install_or_upgrade_ollama() {
     info "Pulling nemotron-3-super:120b…"
     ollama pull nemotron-3-super:120b
   else
-    info "Pulling nemotron-3-nano:30b…"
-    ollama pull nemotron-3-nano:30b
+    info "Pulling qwen3.5:9b…"
+    ollama pull qwen3.5:9b
   fi
 }
 
