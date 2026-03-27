@@ -31,11 +31,13 @@ This is a constrained environment. NemoClaw can run but requires careful managem
 of other Docker containers.
 
 **Docker Desktop settings:**
+
 - Memory: **4 GB** (Settings → Resources → Memory)
 - CPUs: **4**
 - Swap: **1 GB**
 
 **Recommendations:**
+
 - Stop non-essential containers before running NemoClaw
 - Memory-heavy containers (e.g., database engines) can use 1-2 GB alone — stop them when not needed
 - Run `docker system prune` regularly to reclaim disk
@@ -55,6 +57,7 @@ of other Docker containers.
 Comfortable for all workloads simultaneously.
 
 **Docker Desktop settings:**
+
 - Memory: **8 GB**
 - CPUs: **6**
 - Swap: **2 GB**
@@ -64,6 +67,7 @@ Comfortable for all workloads simultaneously.
 No constraints. Use defaults or allocate generously.
 
 **Docker Desktop settings:**
+
 - Memory: **12-16 GB**
 - CPUs: **8+**
 
@@ -90,6 +94,7 @@ unused images, AND volumes. Only use this if you're sure no important data is in
 Docker volumes. Application data (databases, vector stores) often lives in volumes.
 
 **Safe cleanup (preserves volumes):**
+
 ```bash
 docker system prune -a
 ```
@@ -120,6 +125,7 @@ which protects other containers running alongside it.
 ## Monitoring
 
 Check container resource usage:
+
 ```bash
 # Real-time stats
 docker stats
@@ -134,12 +140,15 @@ docker stats nemoclaw-sandbox --no-stream
 ## Troubleshooting
 
 ### "Killed" or OOMKilled
+
 Container exceeded memory limit. Increase Docker VM memory or stop other containers.
 
 ### Slow agent responses
+
 CPU contention. Check `docker stats` for CPU usage. Increase Docker CPU allocation
 or stop CPU-intensive containers (database engines can use significant CPU).
 
 ### "No space left on device"
+
 Docker disk full. Run `docker system prune -a` to reclaim space.
 Check `docker system df` to see what's consuming disk.
