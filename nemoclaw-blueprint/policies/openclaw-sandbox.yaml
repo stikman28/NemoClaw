@@ -53,15 +53,15 @@ network_policies:
         enforcement: enforce
         tls: terminate
         rules:
-          - allow: { method: "*", path: "/**" }
-      - host: statsig.anthropic.com
-        port: 443
-        rules:
-          - allow: { method: "*", path: "/**" }
-      - host: sentry.io
-        port: 443
-        rules:
-          - allow: { method: "*", path: "/**" }
+          # POST: completions, messages, token counting
+          # GET: model listing, usage
+          - allow: { method: GET, path: "/**" }
+          - allow: { method: POST, path: "/**" }
+      # Telemetry removed from baseline. statsig.anthropic.com (feature
+      # flags / analytics) and sentry.io (crash reporting) send operational
+      # metadata to third-party services. Not required for agent function.
+      # To re-enable, apply the telemetry preset dynamically:
+      #   openshell policy set policies/presets/telemetry.yaml
     binaries:
       - { path: /usr/local/bin/claude }
 
@@ -74,27 +74,44 @@ network_policies:
         enforcement: enforce
         tls: terminate
         rules:
-          - allow: { method: "*", path: "/**" }
+          # POST: inference completions
+          # GET: model listing, health checks
+          - allow: { method: GET, path: "/**" }
+          - allow: { method: POST, path: "/**" }
       - host: inference-api.nvidia.com
         port: 443
         protocol: rest
         enforcement: enforce
         tls: terminate
         rules:
-          - allow: { method: "*", path: "/**" }
+          - allow: { method: GET, path: "/**" }
+          - allow: { method: POST, path: "/**" }
     binaries:
       - { path: /usr/local/bin/claude }
       - { path: /usr/local/bin/openclaw }
 
+  # ── GitHub ──────────────────────────────────────────────────────────
+  # Restricted to GET+POST via API. No DELETE/PUT to prevent unauthorized
+  # repo modifications from within the sandbox.
   github:
     name: github
     endpoints:
       - host: github.com
         port: 443
-        access: full
+        protocol: rest
+        enforcement: enforce
+        tls: terminate
+        rules:
+          - allow: { method: GET, path: "/**" }
+          - allow: { method: POST, path: "/**" }
       - host: api.github.com
         port: 443
-        access: full
+        protocol: rest
+        enforcement: enforce
+        tls: terminate
+        rules:
+          - allow: { method: GET, path: "/**" }
+          - allow: { method: POST, path: "/**" }
     binaries:
       - { path: /usr/bin/gh }
       - { path: /usr/bin/git }
@@ -147,12 +164,17 @@ network_policies:
       - { path: /usr/local/bin/openclaw }
 
   # npm registry — needed for `openclaw plugins install` and `npm install`
+  # Restricted to GET (read/download) — no publishing from sandbox.
   npm_registry:
     name: npm_registry
     endpoints:
       - host: registry.npmjs.org
         port: 443
-        access: full
+        protocol: rest
+        enforcement: enforce
+        tls: terminate
+        rules:
+          - allow: { method: GET, path: "/**" }
     binaries:
       - { path: /usr/local/bin/openclaw }
       - { path: /usr/local/bin/npm }

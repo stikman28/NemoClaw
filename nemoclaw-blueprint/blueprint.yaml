@@ -22,6 +22,10 @@ components:
     name: "openclaw"
     forward_ports:
       - 18789
+    resources:
+      memory: "1g"        # Hard limit — prevents sandbox from starving other containers
+      memory_swap: "2g"   # Memory + swap total
+      cpus: "2.0"         # CPU cores — enough for agent + tool calls
 
   inference:
     profiles:
